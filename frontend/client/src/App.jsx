@@ -28,6 +28,7 @@ const CourseTrivia = ReactLazy(() => import('./pages/CourseTrivia'));
 const WordScramble = ReactLazy(() => import('./pages/WordScramble'));
 const SpeedType = ReactLazy(() => import('./pages/SpeedType'));
 const AdminManageGames = ReactLazy(() => import('./pages/AdminManageGames'));
+const VideoPage = ReactLazy(() => import('./pages/VideoPage'));
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -148,6 +149,7 @@ function AnimatedRoutes() {
         <Route path="/speed-type" element={<PageWrapper><SpeedType /></PageWrapper>} />
         <Route path="/admin" element={<PageWrapper><Admin /></PageWrapper>} />
         <Route path="/admin/manage-games" element={<PageWrapper><AdminManageGames /></PageWrapper>} />
+        <Route path="/video" element={<PageWrapper><VideoPage /></PageWrapper>} />
 
         <Route path="*" element={
           <PageWrapper>

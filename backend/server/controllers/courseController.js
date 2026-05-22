@@ -86,6 +86,25 @@ const getCourses = async (req, res) => {
     });
   }
 };
+
+const getCourseById = async (req, res) => {
+  try {
+    const course = await Course.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    }).lean();
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.json(course);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 const updateCourse = async (req, res) => {
   try {
     let updateData = { ...req.body };
@@ -1515,6 +1534,7 @@ const deleteLesson = async (req, res) => {
 module.exports = {
   createCourse,
   getCourses,
+  getCourseById,
   updateCourse,
   deleteCourse,
   getCertificate,

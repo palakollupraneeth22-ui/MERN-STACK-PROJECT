@@ -8,6 +8,7 @@ const uploadVideo = require("../middleware/uploadMiddleware");
 const {
   createCourse,
   getCourses,
+  getCourseById,
   updateCourse,
   deleteCourse,
   getCertificate,
@@ -59,9 +60,10 @@ router.put("/:courseId/modules/:moduleId/lessons/reorder", protect, updateLesson
 router.put("/:courseId/modules/:moduleId/lessons/:lessonId", protect, updateLesson);
 router.delete("/:courseId/modules/:moduleId/lessons/:lessonId", protect, deleteLesson);
 
-// UPDATE + DELETE
+// UPDATE + DELETE + GET ONE
 router
   .route("/:id")
+  .get(protect, getCourseById)
   .put(protect, updateCourse)
   .delete(protect, deleteCourse);
 

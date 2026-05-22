@@ -175,12 +175,7 @@ function Dashboard() {
 
   useTheme(); // Initialize theme
 
-  const [playingVideo, setPlayingVideo] = useState(null);
 
-  // VIDEO NOTES STATE & HANDLERS
-  const [videoNotes, setVideoNotes] = useState("");
-  const [videoNotesSaveSuccess, setVideoNotesSaveSuccess] = useState(false);
-  const [isSavingNotes, setIsSavingNotes] = useState(false);
 
   // MANUAL LOG FORM STATE
   const [manualLog, setManualLog] = useState({
@@ -211,6 +206,8 @@ function Dashboard() {
 
   const isAdmin = currentUser?.isAdmin || currentUser?.role === "admin" || currentUser?.email === "admin@gmail.com";
 
+  const [leaderBoardUsers, setLeaderBoardUsers] = useState([]);
+
   // FETCH COURSES AND SYNC STREAKS
   const fetchCourses = async () => {
     try {
@@ -228,6 +225,31 @@ function Dashboard() {
     }
   };
 
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await API.get('/auth/users');
+      const usersData = Array.isArray(res.data) ? res.data : [];
+      
+      const ranked = usersData.map((u) => {
+        const streak = u.studyStreak || 0;
+        const todayStudy = (u.todayStudyTime || 0) / 3600;
+        const score = ((u.totalCourses || 0) * 100) + ((u.avgProgress || 0) * 10) + (streak * 50);
+        return {
+          id: u._id,
+          name: u.name || "Student",
+          hours: Number(todayStudy.toFixed(1)),
+          streak: streak,
+          score: score,
+          isSelf: currentUser?._id === u._id || currentUser?.id === u._id
+        };
+      }).sort((a, b) => b.score - a.score).map((user, idx) => ({ ...user, rank: idx + 1 }));
+
+      setLeaderBoardUsers(ranked.slice(0, 10));
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -241,6 +263,7 @@ function Dashboard() {
     }
 
     fetchCourses();
+    fetchLeaderboard();
 
     // Socket.io sync integration
     const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || "http://localhost:5000", {
@@ -317,7 +340,6 @@ function Dashboard() {
     try {
       await API.delete(`/courses/${id}`);
       setCourses((prev) => prev.filter((c) => c._id !== id));
-      if (playingVideo?.course?._id === id) setPlayingVideo(null);
     } catch (error) {
       console.error(error);
       alert("Failed to delete course");
@@ -391,67 +413,7 @@ function Dashboard() {
     }
   };
 
-  // VIDEO NOTES EFFECTS
-  useEffect(() => {
-    if (playingVideo && playingVideo.course) {
-      setVideoNotes(playingVideo.course.notes || "");
-    }
-  }, [playingVideo]);
 
-  const handleSaveVideoNotes = async () => {
-    if (!playingVideo) return;
-    setIsSavingNotes(true);
-    try {
-      await handleUpdate(playingVideo.course._id, { notes: videoNotes });
-      setVideoNotesSaveSuccess(true);
-      setTimeout(() => setVideoNotesSaveSuccess(false), 3000);
-
-      setPlayingVideo((prev) => ({
-        ...prev,
-        course: { ...prev.course, notes: videoNotes }
-      }));
-    } finally {
-      setIsSavingNotes(false);
-    }
-  };
-
-  const handleAddVideoSessionEntry = () => {
-    const dStr = new Date().toLocaleString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    });
-    const header = `\n--- 📝 Session: ${dStr} ---\n`;
-    setVideoNotes((prev) => (!prev ? header.trimStart() : prev + header));
-  };
-
-  // AUTO-LOG VIDEO LESSON COMPLETED
-  useEffect(() => {
-    if (!playingVideo) return;
-
-    const course = playingVideo.course;
-    const title = course?.modules?.[playingVideo.mIndex]?.lessons?.[playingVideo.lIndex]?.title || "Video Lesson";
-    const startTime = Date.now();
-
-    return () => {
-      const secs = Math.floor((Date.now() - startTime) / 1000);
-      if (secs >= 15) {
-        const current = course.timeSpent || 0;
-        const mins = Math.max(1, Math.round(secs / 60));
-
-        handleUpdate(course._id, {
-          timeSpent: current + secs,
-          newLog: {
-            date: new Date(),
-            duration: mins,
-            notes: `Studied: watched ${title}`
-          }
-        }).catch((e) => console.error("Error auto logging video play", e));
-      }
-    };
-  }, [playingVideo]);
 
   // STATS CALCULATIONS
   const totalCourses = courses.length;
@@ -572,7 +534,7 @@ function Dashboard() {
   // Expected vs actual hours study time
   const expectedVsActualData = courses.map((course) => ({
     name: course.title.length > 15 ? course.title.slice(0, 15) + "..." : course.title,
-    Expected: Number(course.totalHours) || 5,
+    Expected: Number(course.totalHours) || 0,
     Actual: Number(((course.timeSpent || 0) / 3600).toFixed(2))
   }));
 
@@ -690,15 +652,7 @@ function Dashboard() {
     };
   });
 
-  // Dynamic user rankings for community leaderboard
-  const leaderBoardUsers = [
-    { rank: 1, name: "Alexander Wright", hours: 48.2, streak: 34, score: 1480 },
-    { rank: 2, name: "Prisha Sharma", hours: 38.5, streak: 18, score: 1160 },
-    { rank: 3, name: "Carlos Santana", hours: 32.1, streak: 12, score: 940 },
-    { rank: 4, name: currentUser?.name || "Student (You)", hours: totalHours, streak: displayStreak, score: totalXP, isSelf: true },
-    { rank: 5, name: "Sophie Dubois", hours: 14.8, streak: 6, score: 480 },
-    { rank: 6, name: "Siddharth Jain", hours: 8.5, streak: 3, score: 280 },
-  ].sort((a, b) => b.score - a.score).map((user, idx) => ({ ...user, rank: idx + 1 }));
+  // Dynamic user rankings for community leaderboard fetched from API
 
   // QR Certificate Verifier Handler
   const handleVerifyCertificate = async (e) => {
@@ -1352,65 +1306,7 @@ function Dashboard() {
 
   const renderCourses = () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      {playingVideo ? (
-        <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
-              <Play size={16} color="var(--primary)" />
-              LMS Lesson Player: {playingVideo.course.title}
-            </h3>
-            <button onClick={() => setPlayingVideo(null)} className="action-btn" style={{ padding: "6px 14px", background: "var(--bg-main)", color: "white", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>✕ Close Player</button>
-          </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: "20px" }} className="charts-grid">
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <VideoPlayer 
-                url={playingVideo.url} 
-                onComplete={() => handleLessonUpdateStatus(playingVideo.course, playingVideo.mIndex, playingVideo.lIndex, true)} 
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(0,0,0,0.2)", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
-                <span style={{ fontWeight: "700", fontSize: "14px", color: "white" }}>
-                  Lesson {playingVideo.lIndex + 1}: {playingVideo.course.modules[playingVideo.mIndex].lessons[playingVideo.lIndex].title}
-                </span>
-                <button
-                  onClick={() => handleLessonUpdateStatus(playingVideo.course, playingVideo.mIndex, playingVideo.lIndex, !playingVideo.course.modules[playingVideo.mIndex].lessons[playingVideo.lIndex].completed)}
-                  style={{
-                    padding: "6px 14px",
-                    borderRadius: "8px",
-                    background: playingVideo.course.modules[playingVideo.mIndex].lessons[playingVideo.lIndex].completed ? "rgba(16,185,129,0.15)" : "var(--primary)",
-                    color: playingVideo.course.modules[playingVideo.mIndex].lessons[playingVideo.lIndex].completed ? "#10b981" : "white",
-                    border: playingVideo.course.modules[playingVideo.mIndex].lessons[playingVideo.lIndex].completed ? "1px solid rgba(16,185,129,0.3)" : "none",
-                    fontWeight: "bold",
-                    fontSize: "12px",
-                    cursor: "pointer"
-                  }}
-                >
-                  {playingVideo.course.modules[playingVideo.mIndex].lessons[playingVideo.lIndex].completed ? "✓ Completed" : "Mark Completed"}
-                </button>
-              </div>
-            </div>
-
-            <div className="glass-card" style={{ display: "flex", flexDirection: "column", gap: "12px", background: "rgba(255,255,255,0.01)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h4 style={{ margin: 0, fontWeight: "700", fontSize: "14px", color: "white" }}>📝 Module Focus Notes</h4>
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <button onClick={handleAddVideoSessionEntry} style={{ padding: "4px 8px", background: "var(--bg-main)", color: "var(--text-muted)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>+ Timestamp</button>
-                  <button onClick={handleSaveVideoNotes} disabled={isSavingNotes} style={{ padding: "4px 10px", background: "var(--primary)", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>
-                    {isSavingNotes ? "Saving..." : "Save"}
-                  </button>
-                </div>
-              </div>
-              <textarea
-                value={videoNotes}
-                onChange={(e) => setVideoNotes(e.target.value)}
-                placeholder="Take notes or write down code snippets..."
-                style={{ width: "100%", flex: 1, minHeight: "180px", background: "var(--bg-main)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", color: "white", padding: "12px", outline: "none", fontSize: "13px", fontFamily: "inherit", resize: "none" }}
-              />
-              {videoNotesSaveSuccess && <span style={{ color: "#10b981", fontSize: "12px", fontWeight: "bold" }}>✓ Notes saved!</span>}
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {/* View Filters bar */}
       <div className="glass-card" style={{ padding: "18px 24px" }}>
@@ -1519,8 +1415,7 @@ function Dashboard() {
                   onDelete={() => handleDelete(c._id)}
                   onUpdate={(data) => handleUpdate(c._id, data)}
                   onPlayVideo={(videoData) => {
-                    window.scrollTo(0, 0);
-                    setPlayingVideo(videoData);
+                    navigate(`/video?courseId=${c._id}&mIndex=${videoData.mIndex}&lIndex=${videoData.lIndex}`);
                   }}
                 />
               </motion.div>
@@ -1563,8 +1458,7 @@ function Dashboard() {
                           onDelete={() => handleDelete(c._id)}
                           onUpdate={(data) => handleUpdate(c._id, data)}
                           onPlayVideo={(videoData) => {
-                            window.scrollTo(0, 0);
-                            setPlayingVideo(videoData);
+                            navigate(`/video?courseId=${c._id}&mIndex=${videoData.mIndex}&lIndex=${videoData.lIndex}`);
                           }}
                         />
                       </div>
