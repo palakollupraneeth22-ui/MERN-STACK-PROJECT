@@ -461,3 +461,23 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.5);
 }
+
+/* Video Page Layout */
+.video-page-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .video-page-layout {
+    grid-template-columns: 1fr 340px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .video-page-layout {
+    grid-template-columns: 1fr 380px;
+  }
+}

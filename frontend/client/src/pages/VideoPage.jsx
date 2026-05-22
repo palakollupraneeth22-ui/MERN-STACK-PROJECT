@@ -387,14 +387,7 @@ export default function VideoPage() {
         </motion.div>
 
         {/* Main Layout: Video + Sidebar */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 380px",
-          gap: "24px",
-          alignItems: "start",
-        }}
-          className="charts-grid"
-        >
+        <div className="video-page-layout">
           {/* Left Column — Video Player & Controls */}
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
