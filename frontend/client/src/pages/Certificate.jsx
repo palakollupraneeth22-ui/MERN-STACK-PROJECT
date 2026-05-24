@@ -5,6 +5,7 @@ import { useTheme } from "../useTheme";
 import signatureImage from "../assets/image.png";
 import "./Certificate.css";
 import { ArrowLeft, Download, Award, ShieldAlert } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 export default function Certificate() {
   useTheme();
@@ -105,7 +106,7 @@ export default function Certificate() {
       pdf.save(`${studentName.replace(/\s+/g, '_')}_Certificate_${certId}.pdf`);
     } catch (error) {
       console.error('Error downloading certificate:', error);
-      alert('Failed to output your premium certificate. Please retry.');
+      toast.error('Failed to output your premium certificate. Please retry.');
     } finally {
       setIsDownloading(false);
     }

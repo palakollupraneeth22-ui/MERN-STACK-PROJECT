@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 export default function LessonTracker({ courseId, courseTitle, modules, isUpdating, onLessonToggle, onPlayVideo }) {
   const [lessonQuizzes, setLessonQuizzes] = useState({});
@@ -189,7 +190,7 @@ export default function LessonTracker({ courseId, courseTitle, modules, isUpdati
                         onChange={() => {
                           if (lesson.videoUrl) {
                             if (!lesson.completed) {
-                              alert("Please watch the complete video to mark this lesson as complete.");
+                              toast.error("Please watch the complete video to mark this lesson as complete.");
                             }
                             return;
                           }

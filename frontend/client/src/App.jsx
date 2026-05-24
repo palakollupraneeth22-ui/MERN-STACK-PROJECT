@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { Toaster } from "react-hot-toast";
 import "./theme.css";
 import "./interactive-styles.css";
 
@@ -188,6 +189,14 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <Toaster position="top-right" toastOptions={{
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-main)',
+            border: '1px solid var(--border-color)',
+            backdropFilter: 'blur(10px)',
+          }
+        }} />
         <React.Suspense fallback={null}>
           <AnimatedRoutes />
         </React.Suspense>

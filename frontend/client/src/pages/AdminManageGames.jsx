@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/NavBar";
-import { useTheme } from "../useTheme";
 import API from "../services/api";
+import { toast } from "react-hot-toast";
 import "./DashBoard.css";
 import { 
   Gamepad2, 
@@ -97,12 +97,12 @@ function AdminManageGames() {
     if (!newGameTitle.trim()) return;
     try {
       await API.post("/games", { title: newGameTitle.trim() });
-      alert("New game channel successfully deployed!");
+      toast.success("New game channel successfully deployed!");
       setNewGameTitle("");
       fetchGames();
     } catch (err) {
       console.error("Error creating game:", err);
-      alert(err.response?.data?.message || "Failed to deploy game channel.");
+      toast.error(err.response?.data?.message || "Failed to deploy game channel.");
     }
   };
 
@@ -111,13 +111,13 @@ function AdminManageGames() {
     if (!editingGameTitle.trim()) return;
     try {
       await API.put(`/games/${gameId}`, { title: editingGameTitle.trim() });
-      alert("Game channel successfully renamed!");
+      toast.success("Game channel successfully renamed!");
       setEditingGameId(null);
       setEditingGameTitle("");
       fetchGames();
     } catch (err) {
       console.error("Error updating game title:", err);
-      alert(err.response?.data?.message || "Failed to update title.");
+      toast.error(err.response?.data?.message || "Failed to update title.");
     }
   };
 
@@ -126,12 +126,12 @@ function AdminManageGames() {
     if (!window.confirm("Are you sure you want to delete this game channel and all its questions?")) return;
     try {
       await API.delete(`/games/${gameId}`);
-      alert("Game channel successfully removed.");
+      toast.success("Game channel successfully removed.");
       if (selectedGameId === gameId) setSelectedGameId("");
       fetchGames();
     } catch (err) {
       console.error("Error deleting game:", err);
-      alert(err.response?.data?.message || "Failed to delete game.");
+      toast.error(err.response?.data?.message || "Failed to delete game.");
     }
   };
 
@@ -139,12 +139,12 @@ function AdminManageGames() {
   const handleInjectQuestion = async (e) => {
     e.preventDefault();
     if (!selectedGameId) {
-      alert("Please select a game channel first.");
+      toast.error("Please select a game channel first.");
       return;
     }
     const { text, options, correctAnswer } = newQuestionForm;
     if (!text.trim() || !options.trim() || !correctAnswer.trim()) {
-      alert("All question fields are required.");
+      toast.error("All question fields are required.");
       return;
     }
 
@@ -155,12 +155,12 @@ function AdminManageGames() {
         options: formattedOptions,
         correctAnswer: correctAnswer.trim()
       });
-      alert("Question successfully integrated!");
+      toast.success("Question successfully integrated!");
       setNewQuestionForm({ text: "", options: "", correctAnswer: "" });
       fetchGames();
     } catch (err) {
       console.error("Error injecting question:", err);
-      alert(err.response?.data?.message || "Failed to save question.");
+      toast.error(err.response?.data?.message || "Failed to save question.");
     }
   };
 
@@ -183,12 +183,12 @@ function AdminManageGames() {
         options: formattedOptions,
         correctAnswer: questionForm.correctAnswer.trim()
       });
-      alert("Question bank item successfully updated!");
+      toast.success("Question bank item successfully updated!");
       setEditingQuestionId(null);
       fetchGames();
     } catch (err) {
       console.error("Error updating question:", err);
-      alert(err.response?.data?.message || "Failed to update question.");
+      toast.error(err.response?.data?.message || "Failed to update question.");
     }
   };
 
@@ -197,11 +197,11 @@ function AdminManageGames() {
     if (!window.confirm("Are you sure you want to remove this question from the bank?")) return;
     try {
       await API.delete(`/games/${gameId}/questions/${questionId}`);
-      alert("Question deleted successfully.");
+      toast.success("Question deleted successfully.");
       fetchGames();
     } catch (err) {
       console.error("Error deleting question:", err);
-      alert(err.response?.data?.message || "Failed to delete question.");
+      toast.error(err.response?.data?.message || "Failed to delete question.");
     }
   };
 

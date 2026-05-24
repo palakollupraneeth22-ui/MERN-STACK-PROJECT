@@ -4,6 +4,7 @@ import Navbar from "../components/NavBar";
 import API from "../services/api";
 import { useTheme } from "../useTheme";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
 import "./DashBoard.css";
 import {
   BarChart,
@@ -145,6 +146,7 @@ function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Advanced User states
   const [selectedUser, setSelectedUser] = useState(null); // Profile detail modal
@@ -228,11 +230,12 @@ function Admin() {
 
     const isAdmin = user?.isAdmin || user?.role === "admin" || user?.email === "admin@gmail.com";
     if (!isAdmin) {
-      alert("Access Denied: You do not have admin privileges.");
+      toast.error("Access Denied: You do not have admin privileges.");
       navigate("/dashboard");
       return;
     }
 
+    setCurrentUser(user);
     fetchUsers();
   }, [navigate]);
 
@@ -264,22 +267,26 @@ function Admin() {
       
       setUsers(users.map(u => u._id === userId ? { ...u, ...(res.data?.user || editFormData) } : u));
       setEditingUserId(null);
-      alert("User details updated successfully!");
+      toast.success("User details updated successfully!");
     } catch (err) {
       console.error("Error updating user:", err);
-      alert(err.response?.data?.message || "Failed to update user details.");
+      toast.error(err.response?.data?.message || "Failed to update user details.");
     }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    if (currentUser && (currentUser._id === userId || currentUser.id === userId)) {
+      toast.error("Security Policy: You cannot delete your own admin account.");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to completely erase this user from the system?")) return;
     try {
       await API.delete(`/auth/users/${userId}`);
       setUsers(users.filter(u => u._id !== userId));
-      alert("User account deleted successfully!");
+      toast.success("User account deleted successfully!");
     } catch (err) {
       console.error("Error deleting user:", err);
-      alert(err.response?.data?.message || "Failed to delete user.");
+      toast.error(err.response?.data?.message || "Failed to delete user.");
     }
   };
 
@@ -288,13 +295,13 @@ function Admin() {
     e.preventDefault();
     try {
       const res = await API.post("/courses", courseForm);
-      alert("Course created successfully!");
+      toast.success("Course created successfully!");
       setAdminCourses([...adminCourses, res.data]);
       setIsAddingCourse(false);
       setCourseForm({ title: "", platform: "", totalHours: 10, category: "Web Development" });
     } catch (err) {
       console.error(err);
-      alert("Failed to add course");
+      toast.error("Failed to add course");
     }
   };
 
@@ -303,10 +310,10 @@ function Admin() {
     try {
       await API.delete(`/courses/${courseId}`);
       setAdminCourses(adminCourses.filter(c => c._id !== courseId));
-      alert("Course deleted successfully.");
+      toast.success("Course deleted successfully.");
     } catch (err) {
       console.error("Error deleting course:", err);
-      alert("Failed to delete course.");
+      toast.error("Failed to delete course.");
     }
   };
 
@@ -315,10 +322,10 @@ function Admin() {
     try {
       await API.delete(`/games/${gameId}`);
       setAdminGames(adminGames.filter(g => g._id !== gameId && g.id !== gameId));
-      alert("Game deleted successfully.");
+      toast.success("Game deleted successfully.");
     } catch (err) {
       console.error("Error deleting game:", err);
-      alert("Failed to delete game.");
+      toast.error("Failed to delete game.");
     }
   };
 
@@ -356,7 +363,7 @@ function Admin() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    alert("Admin session terminated.");
+    toast.success("Admin session terminated.");
     navigate("/login");
   };
 
@@ -759,12 +766,18 @@ function Admin() {
                           </div>
                         ) : (
                           <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                            <button onClick={() => handleEditClick(user)} style={{ padding: "8px", background: "rgba(99, 102, 241, 0.08)", color: "var(--primary-light)", border: "none", borderRadius: "8px", cursor: "pointer" }} title="Edit Record">
-                              <Key size={14} />
-                            </button>
-                            <button onClick={() => handleDeleteUser(user._id)} style={{ padding: "8px", background: "rgba(239, 68, 68, 0.08)", color: "#EF4444", border: "none", borderRadius: "8px", cursor: "pointer" }} title="Delete Account">
-                              <Trash2 size={14} />
-                            </button>
+                            {currentUser && (currentUser._id === user._id || currentUser.id === user._id) ? (
+                              <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic", padding: "8px" }}>Current Session</span>
+                            ) : (
+                              <>
+                                <button onClick={() => handleEditClick(user)} style={{ padding: "8px", background: "rgba(99, 102, 241, 0.08)", color: "var(--primary-light)", border: "none", borderRadius: "8px", cursor: "pointer" }} title="Edit Record">
+                                  <Key size={14} />
+                                </button>
+                                <button onClick={() => handleDeleteUser(user._id)} style={{ padding: "8px", background: "rgba(239, 68, 68, 0.08)", color: "#EF4444", border: "none", borderRadius: "8px", cursor: "pointer" }} title="Delete Account">
+                                  <Trash2 size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         )}
                       </td>

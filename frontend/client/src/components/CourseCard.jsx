@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import LessonTracker from "./LessonTracker";
 import Confetti from "react-confetti";
+import { toast } from "react-hot-toast";
 import "./CourseCard.css";
 
 const WORK_TIME = 25 * 60;
@@ -403,7 +404,7 @@ function CourseCard({ course, onDelete, onUpdate, onPlayVideo }) {
       navigate(`/certificate?courseName=${encodeURIComponent(course.title)}`);
     } catch (error) {
       console.error("Error navigating to certificate page:", error);
-      alert("Unable to open certificate page. Please try again.");
+      toast.error("Unable to open certificate page. Please try again.");
     } finally {
       setIsUpdating(false);
     }

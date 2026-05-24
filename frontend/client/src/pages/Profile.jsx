@@ -6,6 +6,7 @@ import API from "../services/api";
 import { useTheme } from "../useTheme";
 import "./Profile.css";
 import "./DashBoard.css";
+import { toast } from "react-hot-toast";
 
 function Profile() {
   const navigate = useNavigate();
@@ -65,10 +66,10 @@ function Profile() {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUserData(updatedUser);
       setIsEditing(false);
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert(error.response?.data?.message || "Failed to update profile.");
+      toast.error(error.response?.data?.message || "Failed to update profile.");
     }
   };
 
@@ -77,7 +78,7 @@ function Profile() {
     if (!file) return;
     
     if (file.size > 5 * 1024 * 1024) {
-      alert("File size must be less than 5MB. Please compress your file.");
+      toast.error("File size must be less than 5MB. Please compress your file.");
       return;
     }
 
@@ -105,7 +106,7 @@ function Profile() {
         setUserData(updatedUser);
       } catch (err) {
         console.error("Upload error", err);
-        alert("Failed to upload certificate.");
+        toast.error("Failed to upload certificate.");
       } finally {
         setIsUploading(false);
       }
@@ -127,7 +128,7 @@ function Profile() {
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setUserData(updatedUser);
     } catch {
-      alert("Failed to delete certificate.");
+      toast.error("Failed to delete certificate.");
     }
   };
 
@@ -171,7 +172,7 @@ function Profile() {
       link.click();
     } catch (err) {
       console.error("Export error", err);
-      alert("Failed to export CSV data.");
+      toast.error("Failed to export CSV data.");
     } finally {
       setIsExporting(false);
     }
@@ -201,14 +202,14 @@ function Profile() {
 
       const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([mdContent], { type: 'text/markdown;charset=utf-8;' })); link.download = "My_Learning_Data.md"; link.click();
     } catch {
-      alert("Failed to export Markdown data.");
+      toast.error("Failed to export Markdown data.");
     } finally { setIsExporting(false); }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    alert("Logged Out");
+    toast.success("Logged Out");
     navigate("/");
   };
 
@@ -416,15 +417,15 @@ function Profile() {
                     className={`btn-premium ${notifPermission === "granted" ? "btn-premium-primary" : "btn-premium-secondary"}`}
                     onClick={async () => {
                       if (notifPermission === "unsupported") {
-                        alert("This browser does not support desktop notifications.");
+                        toast.error("This browser does not support desktop notifications.");
                         return;
                       }
                       const permission = await Notification.requestPermission();
                       setNotifPermission(permission);
                       if (permission === "granted") {
-                        alert("Notifications enabled! You'll receive study reminders.");
+                        toast.success("Notifications enabled! You'll receive study reminders.");
                       } else {
-                        alert("Notifications disabled. Change this in browser settings.");
+                        toast.error("Notifications disabled. Change this in browser settings.");
                       }
                     }}
                     whileHover={{ scale: 1.02 }}

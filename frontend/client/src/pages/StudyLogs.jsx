@@ -3,6 +3,7 @@ import Navbar from "../components/NavBar";
 import API from "../services/api";
 import { useTheme } from "../useTheme";
 import { io } from "socket.io-client";
+import { toast } from "react-hot-toast";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import "./DashBoard.css";
 
@@ -261,9 +262,10 @@ export default function StudyLogs() {
       });
       
       fetchCoursesAndLogs();
+      toast.success("Study log deleted successfully.");
     } catch (err) {
       console.error(err);
-      alert("Failed to delete study log.");
+      toast.error("Failed to delete study log.");
     }
   };
 

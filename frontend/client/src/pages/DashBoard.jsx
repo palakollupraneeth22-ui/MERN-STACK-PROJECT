@@ -9,6 +9,7 @@ import ProgressBar from "../components/ProgressBar";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend, AreaChart, Area } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
+import { toast } from "react-hot-toast";
 import {
   LayoutDashboard,
   BookOpen,
@@ -342,7 +343,7 @@ function Dashboard() {
       setCourses((prev) => prev.filter((c) => c._id !== id));
     } catch (error) {
       console.error(error);
-      alert("Failed to delete course");
+      toast.error("Failed to delete course");
     }
   };
 
@@ -362,7 +363,7 @@ function Dashboard() {
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to update progress");
+      toast.error("Failed to update progress");
     }
   };
 
@@ -370,11 +371,11 @@ function Dashboard() {
   const handleAddManualLog = async (e) => {
     e.preventDefault();
     if (!manualLog.courseId) {
-      alert("Please select a course to log time against.");
+      toast.error("Please select a course to log time against.");
       return;
     }
     if (Number(manualLog.duration) <= 0) {
-      alert("Please enter a valid duration studied (in minutes).");
+      toast.error("Please enter a valid duration studied (in minutes).");
       return;
     }
 
@@ -397,7 +398,7 @@ function Dashboard() {
       };
 
       await handleUpdate(manualLog.courseId, payload);
-      alert("Manual study log added successfully!");
+      toast.success("Manual study log added successfully!");
       setManualLog({
         courseId: "",
         duration: 30,
@@ -407,7 +408,7 @@ function Dashboard() {
       fetchCourses();
     } catch (error) {
       console.error(error);
-      alert("Failed to add study log.");
+      toast.error("Failed to add study log.");
     } finally {
       setManualLogSubmitting(false);
     }
@@ -712,10 +713,10 @@ function Dashboard() {
       localStorage.setItem("user", JSON.stringify(freshUser));
       setCurrentUser(freshUser);
       setProfileEditing(false);
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to update profile settings.");
+      toast.error(err.response?.data?.message || "Failed to update profile settings.");
     } finally {
       setProfileSubmitting(false);
     }
@@ -725,7 +726,7 @@ function Dashboard() {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (!pwdForm.currentPassword || !pwdForm.newPassword) {
-      alert("Please fill in all password fields.");
+      toast.error("Please fill in all password fields.");
       return;
     }
     setPwdSubmitting(true);
@@ -735,11 +736,11 @@ function Dashboard() {
         currentPassword: pwdForm.currentPassword,
         newPassword: pwdForm.newPassword
       });
-      alert("Password updated successfully!");
+      toast.success("Password updated successfully!");
       setPwdForm({ currentPassword: "", newPassword: "" });
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to update password. Verify current password.");
+      toast.error(err.response?.data?.message || "Failed to update password. Verify current password.");
     } finally {
       setPwdSubmitting(false);
     }
@@ -801,7 +802,7 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    alert("Logged out successfully");
+    toast.success("Logged out successfully");
     navigate("/login");
   };
 

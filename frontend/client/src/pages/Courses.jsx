@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/NavBar";
 import API from "../services/api";
 import { useTheme } from "../useTheme";
+import { toast } from "react-hot-toast";
 import "./DashBoard.css";
 
 const AVAILABLE_COURSES = [
@@ -497,9 +498,10 @@ function Courses() {
         }
       );
       setAddedCourses(prev => new Set(prev).add(course.id));
+      toast.success("Course added to dashboard!");
     } catch (error) {
       console.error(error);
-      alert(`Failed to add course: ${error.response?.data?.message || error.message}`);
+      toast.error(`Failed to add course: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoadingId(null);
     }

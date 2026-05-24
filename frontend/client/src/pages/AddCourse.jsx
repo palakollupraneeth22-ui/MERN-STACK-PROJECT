@@ -5,6 +5,7 @@ import API from "../services/api";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useTheme } from "../useTheme";
 import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 export default function AddCourse() {
   useTheme();
@@ -42,7 +43,7 @@ export default function AddCourse() {
       const user = JSON.parse(storedUser);
       const isAdmin = user?.isAdmin || user?.role === "admin" || user?.email === "admin@gmail.com";
       if (!isAdmin) {
-        alert("Access Denied: Only administrators can add custom courses.");
+        toast.error("Access Denied: Only administrators can add custom courses.");
         navigate("/dashboard");
       }
     } catch {
@@ -144,7 +145,7 @@ export default function AddCourse() {
 
     const videoUrl = lessonData.videoUrl?.trim() || "";
     if (videoUrl && !videoUrl.match(/youtube\.com|youtu\.be/)) {
-      alert("Please enter a valid working YouTube URL for the lesson video.");
+      toast.error("Please enter a valid working YouTube URL for the lesson video.");
       return;
     }
 
