@@ -1,8 +1,11 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-});
+// Render's `fromService: url` gives the service root URL (no /api suffix).
+// Ensure we always point to /api regardless of how the env var is set.
+const rawBaseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const baseURL = rawBaseURL.endsWith("/api") ? rawBaseURL : `${rawBaseURL.replace(/\/$/, "")}/api`;
+
+const API = axios.create({ baseURL });
 
 // Request Interceptor - Add token to all requests
 API.interceptors.request.use(

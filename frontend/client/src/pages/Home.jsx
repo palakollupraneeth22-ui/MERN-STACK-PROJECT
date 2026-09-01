@@ -88,14 +88,14 @@ function Home() {
       `}</style>
 
       {/* Global Navigation Header */}
-      <motion.header 
+      <motion.header
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="nav-header" 
+        className="nav-header"
         style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 40px", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", position: "sticky", top: 0, background: "rgba(11, 14, 20, 0.7)", zIndex: 100, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}
       >
-        
+
         <div style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
           <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "linear-gradient(135deg, var(--primary), var(--primary-dark))", display: "flex", justifyContent: "center", alignItems: "center", color: "white", fontSize: "20px", fontWeight: "900", boxShadow: "0 4px 15px rgba(99, 102, 241, 0.4)", border: "1px solid rgba(255,255,255,0.15)" }}>
             S
@@ -117,14 +117,14 @@ function Home() {
 
       {/* Main landing container */}
       <main className="dashboard-container" style={{ position: "relative", zIndex: 2, paddingBottom: "80px" }}>
-        
+
         {/* Hero split layout */}
         <div className="hero-row" style={{ display: "flex", gap: "60px", alignItems: "center", marginTop: "40px", width: "100%" }}>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: -40 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ duration: 0.8 }} 
+
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
             className="hero-info-col"
             style={{ flex: 1.1 }}
           >
@@ -139,7 +139,7 @@ function Home() {
               Master new skills. <br />
               Track in <span style={{ background: "linear-gradient(135deg, var(--primary-light), #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Real-Time.</span>
             </h1>
-            
+
             <p className="hero-description">
               Elevate your self-education journey. Experience an elegant, dark glassmorphism system packing customized Pomodoro tools, daily challenges, heatmaps, and cryptographic certificates of accomplishment.
             </p>
@@ -153,10 +153,10 @@ function Home() {
           </motion.div>
 
           {/* Interactive Mockup Visual */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            transition={{ duration: 0.8, delay: 0.2 }} 
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="mockup-col"
             style={{ flex: 0.9, position: "relative" }}
           >
@@ -209,9 +209,9 @@ function Home() {
             </div>
 
             {/* Float Floating streak widget */}
-            <motion.div 
-              animate={{ y: [0, -12, 0] }} 
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }} 
+            <motion.div
+              animate={{ y: [0, -12, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
               style={{ position: "absolute", bottom: "-15px", right: "-15px", background: "rgba(21, 25, 35, 0.8)", backdropFilter: "blur(15px)", WebkitBackdropFilter: "blur(15px)", border: "1px solid rgba(245, 158, 11, 0.4)", padding: "12px 18px", borderRadius: "14px", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 10px 25px rgba(0,0,0,0.4)" }}
             >
               <span style={{ fontSize: "24px" }}>🔥</span>
@@ -227,9 +227,9 @@ function Home() {
 
         {/* Feature Node Grid */}
         <section style={{ marginTop: "120px" }}>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             style={{ textAlign: "center", marginBottom: "50px" }}
@@ -239,10 +239,10 @@ function Home() {
           </motion.div>
 
           <div className="course-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-            
-            <motion.div 
+
+            <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card" 
+              className="glass-card"
               style={{ padding: "28px" }}
             >
               <div style={{ color: "#3b82f6", background: "rgba(59, 130, 246, 0.1)", width: "42px", height: "42px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "18px" }}>
@@ -252,9 +252,9 @@ function Home() {
               <p style={{ margin: 0, fontSize: "13.5px", color: "var(--text-muted)", lineHeight: 1.6 }}>Organize complex learning channels. Break courses into modules, track lectures, and logs milestones with ease.</p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card" 
+              className="glass-card"
               style={{ padding: "28px" }}
             >
               <div style={{ color: "#10b981", background: "rgba(16, 185, 129, 0.1)", width: "42px", height: "42px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "18px" }}>
@@ -264,9 +264,9 @@ function Home() {
               <p style={{ margin: 0, fontSize: "13.5px", color: "var(--text-muted)", lineHeight: 1.6 }}>Integrate focusing timers. Block distractions, establish deep session targets, and build consistency logs.</p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               whileHover={{ y: -6 }}
-              className="glass-card" 
+              className="glass-card"
               style={{ padding: "28px" }}
             >
               <div style={{ color: "#8b5cf6", background: "rgba(139, 92, 246, 0.1)", width: "42px", height: "42px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "18px" }}>
@@ -280,17 +280,17 @@ function Home() {
         </section>
 
         {/* CTA Banner Area */}
-        <motion.section 
-          initial={{ opacity: 0, y: 30 }} 
-          whileInView={{ opacity: 1, y: 0 }} 
-          viewport={{ once: true }} 
-          transition={{ duration: 0.6 }} 
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
           style={{ marginTop: "120px" }}
         >
           <div className="glass-card welcome-hero-banner cta-card" style={{ padding: "60px 40px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
             <h2 style={{ fontSize: "32px", fontWeight: "900", color: "white", margin: 0 }}>Accelerate Your Journey Systematically</h2>
             <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "15px", maxWidth: "540px", lineHeight: 1.6 }}>Join a community of modern technical builders tracking hours, locking down credentials, and polishing core capabilities.</p>
-            
+
             <Link to="/register" className="action-btn btn-glow" style={{ padding: "16px 36px", borderRadius: "12px", textDecoration: "none", fontWeight: "800", fontSize: "16px", display: "inline-flex", alignItems: "center", gap: "8px", marginTop: "10px" }}>
               Sign Up For Free
               <ArrowRight size={16} />
