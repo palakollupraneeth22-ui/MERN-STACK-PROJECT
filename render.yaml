@@ -27,6 +27,12 @@ services:
           name: course-progress-frontend
           type: static
           property: url
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false # Paste the full firebase-service-account.json content as a JSON string
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
 
   # 2. Frontend Service
   - type: static
